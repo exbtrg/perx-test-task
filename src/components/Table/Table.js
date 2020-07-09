@@ -1,4 +1,5 @@
 import React from 'react'
+import { array, bool, number } from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Table from '@material-ui/core/Table'
 import TableContainer from '@material-ui/core/TableContainer'
@@ -19,6 +20,7 @@ const MyTable = ({ data, fields, loading, perPage }) => {
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         <TableHead fields={fields} />
+
         <TableBody
           data={data}
           fields={fields}
@@ -28,6 +30,13 @@ const MyTable = ({ data, fields, loading, perPage }) => {
       </Table>
     </TableContainer>
   )
+}
+
+MyTable.propTypes = {
+  data: array,
+  fields: array,
+  loading: bool,
+  perPage: number,
 }
 
 export default MyTable

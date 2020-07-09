@@ -30,7 +30,7 @@ const rootReducer = (state, action) => {
       return {
         ...state,
         data: action.payload.list,
-        totalItemsCount: action.payload.headers.totalVehiclesCount,
+        totalItemsCount: Number(action.payload.headers.totalVehiclesCount),
         loading: false,
       }
 

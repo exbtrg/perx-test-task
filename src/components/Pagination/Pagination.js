@@ -1,4 +1,5 @@
 import React from 'react'
+import { func, number } from 'prop-types'
 import { makeStyles } from '@material-ui/core/styles'
 import Pagination from '@material-ui/lab/Pagination'
 import { NativeSelect, Box, InputLabel } from '@material-ui/core'
@@ -42,6 +43,7 @@ const MyPagination = ({
       <Box mr={2}>
         <InputLabel htmlFor="grouped-native-select">Показать</InputLabel>
       </Box>
+
       <NativeSelect
         defaultValue={perPage}
         id="grouped-native-select"
@@ -56,6 +58,14 @@ const MyPagination = ({
       </NativeSelect>
     </div>
   )
+}
+
+MyPagination.propTypes = {
+  onChangePageNumber: func,
+  onChangePerPage: func,
+  count: number,
+  perPage: number,
+  currentPage: number,
 }
 
 export default MyPagination

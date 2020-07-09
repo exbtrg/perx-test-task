@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { array, bool, oneOf, string, number, func } from 'prop-types'
 import { connect } from 'react-redux'
 import { fetchData } from '../../redux/actionCreators'
 import vehiclesFields from './vehiclesFields'
@@ -12,7 +13,7 @@ const VehiclesTable = ({ data, loading, error, perPage, fetchData }) => {
   }, [fetchData, perPage])
 
   if (error) {
-    return <p>Opps.... что то надо починить</p>
+    return <p>Opps.... somthing went wrong</p>
   }
 
   return (
@@ -23,6 +24,14 @@ const VehiclesTable = ({ data, loading, error, perPage, fetchData }) => {
       perPage={perPage}
     />
   )
+}
+
+VehiclesTable.propTypes = {
+  data: array,
+  loading: bool,
+  error: oneOf([null, string]),
+  perPage: number,
+  fetchData: func,
 }
 
 const mapStateToProps = ({ data, loading, error, perPage }) => ({

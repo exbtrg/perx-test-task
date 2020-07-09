@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider as StoreProvider } from 'react-redux'
+import ErrorBoudry from './components/ErrorBoundry'
 import store from './redux/store'
 import { PerxApiServiceProvider } from './contexts/perxApiService'
 import PerxApiService from './service/perxApiService'
@@ -11,11 +12,13 @@ const perxApiService = new PerxApiService()
 
 ReactDOM.render(
   <React.StrictMode>
-    <StoreProvider store={store}>
-      <PerxApiServiceProvider value={perxApiService}>
-        <App />
-      </PerxApiServiceProvider>
-    </StoreProvider>
+    <ErrorBoudry>
+      <StoreProvider store={store}>
+        <PerxApiServiceProvider value={perxApiService}>
+          <App />
+        </PerxApiServiceProvider>
+      </StoreProvider>
+    </ErrorBoudry>
   </React.StrictMode>,
   document.getElementById('root')
 )

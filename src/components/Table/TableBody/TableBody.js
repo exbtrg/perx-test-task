@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react'
+import { array, bool, number } from 'prop-types'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
 import TableRow from '@material-ui/core/TableRow'
@@ -50,6 +51,13 @@ const MyTableBody = ({ data, fields, loading, perPage }) => {
   )
 
   return <TableBody>{loading ? <SkeletonItems /> : <TableItems />}</TableBody>
+}
+
+MyTableBody.propTypes = {
+  data: array,
+  fields: array,
+  loading: bool,
+  perPage: number,
 }
 
 export default MyTableBody
