@@ -1,5 +1,5 @@
 export const transformData = (vehicles, dealers) => {
-  const preparedData = vehicles.data.map(
+  const preparedData = vehicles.map(
     ({ id, vin, model, brand, grade, dealer, office_ids }) => {
       const { offices = [], title = '-' } =
         dealers.find((item) => item.id === dealer) || {}
@@ -19,5 +19,5 @@ export const transformData = (vehicles, dealers) => {
     }
   )
 
-  return { vehicles, dealers, preparedData }
+  return preparedData
 }

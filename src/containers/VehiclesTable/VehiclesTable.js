@@ -17,7 +17,6 @@ const VehiclesTable = ({
   fetchData,
 }) => {
   useEffect(() => {
-    console.log(listDealers)
     fetchData(0, perPage, listDealers)
   }, [fetchData, perPage])
 
@@ -27,7 +26,7 @@ const VehiclesTable = ({
 
   return (
     <Table
-      data={listVehicles}
+      data={transformData(listVehicles, listDealers)}
       fields={vehiclesFields}
       loading={loading}
       perPage={perPage}

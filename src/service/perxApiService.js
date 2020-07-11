@@ -70,9 +70,6 @@ export default class {
 
     const oldList = getDealerIdsFromDealers(listDealers)
     const newList = getDealerIdsFromVehicles(data)
-    // console.log('oldList', oldList)
-    // console.log('newList', newList)
-    // console.log('diff', difference(newList, oldList))
 
     const diff = difference(newList, oldList)
 
