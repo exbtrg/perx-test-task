@@ -9,7 +9,8 @@ import {
 const rootReducer = (state, action) => {
   if (state === undefined) {
     return {
-      data: [],
+      listVehicles: [],
+      listDealers: [],
       loading: true,
       error: null,
       totalItemsCount: 0,
@@ -22,22 +23,23 @@ const rootReducer = (state, action) => {
     case FETCH_DATA_REQUEST:
       return {
         ...state,
-        data: [],
+        listVehicles: [],
         loading: true,
       }
 
     case FETCH_DATA_SUCCESS:
       return {
         ...state,
-        data: action.payload.list,
-        totalItemsCount: Number(action.payload.headers.totalVehiclesCount),
+        listVehicles: action.payload.vehicles.data,
+        listDealers: [...state.listDealers, ...action.payload.dealers],
+        totalItemsCount: Number(action.payload.vehicles.totalVehiclesCount),
         loading: false,
       }
 
     case FETCH_DATA_FAILURE:
       return {
         ...state,
-        data: [],
+        listVehicles: [],
         loading: false,
         error: action.payload,
       }

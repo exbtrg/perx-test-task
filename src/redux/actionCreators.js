@@ -30,10 +30,14 @@ const changeCurrentPageAC = (num) => ({
   payload: num,
 })
 
-const fetchData = (dispatch, apiService) => (pageNumber, perPage) => {
+const updateData = (dispatch, apiService) => (
+  pageNumber,
+  perPage,
+  listDealers
+) => {
   dispatch(fetchDataRequestAC())
   apiService
-    .getData(pageNumber, perPage)
+    .fetchData(pageNumber, perPage, listDealers)
     .then((data) => {
       dispatch(fetchDataSuccessAC(data))
     })
@@ -42,4 +46,4 @@ const fetchData = (dispatch, apiService) => (pageNumber, perPage) => {
     })
 }
 
-export { fetchData, changePerPageAC, changeCurrentPageAC }
+export { updateData, changePerPageAC, changeCurrentPageAC }

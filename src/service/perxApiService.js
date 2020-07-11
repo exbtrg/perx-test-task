@@ -1,23 +1,25 @@
+import urlWithGetParams from '../utils/urlWithGetParams'
+import { difference } from 'lodash'
+
 export default class {
-  _apiBase = 'https://jlrc.dev.perx.ru/carstock/api/v1'
+  _baseUrl = 'https://jlrc.dev.perx.ru/carstock/api/v1'
+  _urlVehicles = `${this._baseUrl}/vehicles`
+  _urlDealers = `${this._baseUrl}/dealers`
 
-  _apiVehiclesPageUrl = (pageNumber, perPage) => {
-    return `/vehicles/?state=active&hidden=false&group=new&page=${pageNumber}&per_page=${perPage}`
-  }
-
-  _apiDealersUrl = (dataVihicles) => {
-    const dealersId = dataVihicles.map(({ dealer }) => dealer)
+  getDealerIdsFromVehicles = (listVehicles) => {
+    const dealersId = listVehicles.map(({ dealer }) => dealer)
     const uniqueId = [...new Set(dealersId)]
     const withOutNullId = uniqueId.filter((item) => item)
 
-    const collectIdForUrl = `/dealers/?id__in=${withOutNullId
-      .map((item) => `${item}`)
-      .join(',')}`
-    return collectIdForUrl
+    return withOutNullId
   }
 
-  getResource = async (url, params = {}) => {
-    const res = await fetch(`${this._apiBase}${url}`, params)
+  getDealerIdsFromDealers = (listDealers) => {
+    return listDealers.map(({ id }) => id)
+  }
+
+  getResource = async (url, params = null) => {
+    const res = await fetch(url, params)
 
     if (!res.ok) {
       throw new Error(`Could no fetch ${url}, status ${res.status}`)
@@ -26,13 +28,16 @@ export default class {
     return res
   }
 
-  getData = async (pageNumber, perPage) => {
-    const {
-      getResource,
-      _apiVehiclesPageUrl,
-      _apiDealersUrl,
-      _transformData,
-    } = this
+  fetchVehicles = async (pageNumber, perPage) => {
+    const { _urlVehicles, getResource } = this
+
+    const getParams = [
+      { name: 'state', value: 'active' },
+      { name: 'hidden', value: 'false' },
+      { name: 'group', value: 'new' },
+      { name: 'page', value: pageNumber },
+      { name: 'per_page', value: perPage },
+    ]
 
     const params = {
       headers: {
@@ -42,45 +47,54 @@ export default class {
     }
 
     const vehiclesRes = await getResource(
-      _apiVehiclesPageUrl(pageNumber, perPage),
+      urlWithGetParams(_urlVehicles, getParams),
       params
     )
+
     const vehiclesBody = await vehiclesRes.json()
-
-    const dealersRes = await getResource(_apiDealersUrl(vehiclesBody))
-    const dealersBody = await dealersRes.json()
-
-    const totalVehiclesCount = await vehiclesRes.headers.get('x-total-count')
+    const totalVehiclesCount = vehiclesRes.headers.get('x-total-count')
 
     return {
-      headers: {
-        totalVehiclesCount: totalVehiclesCount,
-      },
-      list: _transformData(vehiclesBody, dealersBody, totalVehiclesCount),
+      data: vehiclesBody,
+      totalVehiclesCount,
     }
   }
 
-  _transformData = (vehicles, dealers) => {
-    const preparedData = vehicles.map(
-      ({ id, vin, model, brand, grade, dealer, office_ids }) => {
-        const { offices = [], title = '-' } =
-          dealers.find((item) => item.id === dealer) || {}
+  fetchDealers = async ({ data }, listDealers) => {
+    const {
+      _urlDealers,
+      getResource,
+      getDealerIdsFromVehicles,
+      getDealerIdsFromDealers,
+    } = this
 
-        const { address = '-' } =
-          offices.find((item) => item.id === office_ids[0]) || {}
+    const oldList = getDealerIdsFromDealers(listDealers)
+    const newList = getDealerIdsFromVehicles(data)
+    // console.log('oldList', oldList)
+    // console.log('newList', newList)
+    // console.log('diff', difference(newList, oldList))
 
-        return {
-          id,
-          vin,
-          brand,
-          model,
-          grade,
-          dealerName: title,
-          dealerAddress: address,
-        }
-      }
-    )
+    const diff = difference(newList, oldList)
 
-    return preparedData
+    const getParams = [{ name: 'id__in', value: diff.join(',') }]
+
+    if (diff.length !== 0) {
+      const dealersRes = await getResource(
+        urlWithGetParams(_urlDealers, getParams)
+      )
+      return await dealersRes.json()
+    }
+
+    return listDealers
+  }
+
+  fetchData = async (pageNumber, perPage, listDealers) => {
+    const { fetchVehicles, fetchDealers } = this
+
+    const vehicles = await fetchVehicles(pageNumber, perPage)
+
+    const dealers = await fetchDealers(vehicles, listDealers)
+
+    return { vehicles, dealers }
   }
 }
