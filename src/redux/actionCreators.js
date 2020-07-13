@@ -50,7 +50,10 @@ const changeCurrentPageAC = (num) => ({
   payload: num,
 })
 
-const fetchData = (currentPage, perPage) => async (dispatch, getState) => {
+const fetchData = (currentPage, perPage, didCancel) => async (
+  dispatch,
+  getState
+) => {
   try {
     dispatch(fetchDataRequestAC())
 
@@ -64,14 +67,16 @@ const fetchData = (currentPage, perPage) => async (dispatch, getState) => {
 
     const diff = difference(newDealersList, oldDealersList)
 
-    if (diff.length !== 0) {
+    if (diff.length !== 0 && !didCancel) {
       const resDealers = await fetchDealersData(diff)
       const bodyDealers = await resDealers.json()
 
       dispatch(updateDealersData(bodyDealers))
     }
 
-    dispatch(fetchDataSuccessAC({ dataVehicles, totalVehiclesCount }))
+    if (!didCancel) {
+      dispatch(fetchDataSuccessAC({ dataVehicles, totalVehiclesCount }))
+    }
   } catch (error) {
     fetchDataFailureAC(error)
   }

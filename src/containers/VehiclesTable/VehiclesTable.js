@@ -18,7 +18,7 @@ const VehiclesTable = ({
   useEffect(() => {
     let cancelled = false
     if (!cancelled) {
-      fetchData(currentPage, perPage)
+      fetchData(currentPage, perPage, cancelled)
     }
     return () => {
       cancelled = true
