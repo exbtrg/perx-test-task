@@ -4,13 +4,26 @@ import { connect } from 'react-redux'
 import { fetchData } from '../../redux/actionCreators'
 import vehiclesFields from './vehiclesFields'
 import Table from '../../components/Table'
-import withApiService from '../../HOC/withApiService'
-import { compose } from '../../utils/compose'
+import transformData from '../../REST/transformData'
 
-const VehiclesTable = ({ data, loading, error, perPage, fetchData }) => {
+const VehiclesTable = ({
+  dataVehicles,
+  dataDealers,
+  loading,
+  error,
+  perPage,
+  currentPage,
+  fetchData,
+}) => {
   useEffect(() => {
-    fetchData(0, perPage)
-  }, [fetchData, perPage])
+    let cancelled = false
+    if (!cancelled) {
+      fetchData(currentPage, perPage)
+    }
+    return () => {
+      cancelled = true
+    }
+  }, [currentPage, fetchData, perPage])
 
   if (error) {
     return <p>Opps.... somthing went wrong</p>
@@ -18,7 +31,7 @@ const VehiclesTable = ({ data, loading, error, perPage, fetchData }) => {
 
   return (
     <Table
-      data={data}
+      data={transformData(dataVehicles, dataDealers)}
       fields={vehiclesFields}
       loading={loading}
       perPage={perPage}
@@ -34,18 +47,24 @@ VehiclesTable.propTypes = {
   fetchData: func,
 }
 
-const mapStateToProps = ({ data, loading, error, perPage }) => ({
-  data,
+const mapStateToProps = ({
+  dataVehicles,
+  dataDealers,
   loading,
   error,
   perPage,
+  currentPage,
+}) => ({
+  dataVehicles,
+  dataDealers,
+  loading,
+  error,
+  perPage,
+  currentPage,
 })
 
-const mapDispatchToProps = (dispatch, { perxApiService }) => ({
-  fetchData: fetchData(dispatch, perxApiService),
-})
+const mapDispatchToProps = {
+  fetchData,
+}
 
-export default compose(
-  withApiService(),
-  connect(mapStateToProps, mapDispatchToProps)
-)(VehiclesTable)
+export default connect(mapStateToProps, mapDispatchToProps)(VehiclesTable)

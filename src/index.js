@@ -3,20 +3,14 @@ import ReactDOM from 'react-dom'
 import { Provider as StoreProvider } from 'react-redux'
 import ErrorBoudry from './components/ErrorBoundry'
 import store from './redux/store'
-import { PerxApiServiceProvider } from './contexts/perxApiService'
-import PerxApiService from './service/perxApiService'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
-
-const perxApiService = new PerxApiService()
 
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoudry>
       <StoreProvider store={store}>
-        <PerxApiServiceProvider value={perxApiService}>
-          <App />
-        </PerxApiServiceProvider>
+        <App />
       </StoreProvider>
     </ErrorBoudry>
   </React.StrictMode>,
