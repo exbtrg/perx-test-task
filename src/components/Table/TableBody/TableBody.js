@@ -13,7 +13,7 @@ const MyTableBody = ({ data, fields, loading, perPage }) => {
       {fields.map(({ text }) => (
         <Fragment key={text}>
           <TableCell>
-            <Skeleton variant="text" animation="wave" height={53} />
+            <Skeleton variant="text" animation="wave" height={20} />
           </TableCell>
         </Fragment>
       ))}
